@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id         String      @id @default(uuid())
+  name       String
+  email      String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  jobs       Job[]
+  companies  Company[]
+}
+
+model Company {
+  id       String  @id @default(uuid())
+  name     String
+  location String?
+  industry String?
+  website  String?
+  notes    String?
+  userId   String
+  user     User    @relation(fields: [userId], references: [id])
+  jobs     Job[]
+}
+
+model Job {
+  id          String      @id @default(uuid())
+  title       String
+  location    String
+  salary      Float?
+  currency    String      @default("ETB")
+  jobLink     String?
+  dateApplied DateTime?
+  deadline    DateTime?
+  status      String      @default("Wishlist")
+  description String?
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  companyId   String
+  company     Company     @relation(fields: [companyId], references: [id])
+  interviews  Interview[]
+}
+
+model Interview {
+  id        String   @id @default(uuid())
+  date      DateTime
+  platform  String?
+  notes     String?
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id])
+}
